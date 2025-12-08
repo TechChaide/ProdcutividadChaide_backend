@@ -1,0 +1,33 @@
+services:
+  productividad-ordenes-service_test:
+    build: . # <-- AÑADE ESTA LÍNEA
+    image: cachaide/productividad-ordenes-backend:4.0
+    container_name: prod_ord_service_test
+    restart: unless-stopped
+    env_file:
+      - ./.env
+    networks:
+      - traefik-net
+    labels:
+      # ... tus labels de Traefik se mantienen igual ...
+      # - "traefik.enable=true"
+      # - "traefik.docker.network=traefik-net"
+      # - "traefik.http.routers.prod-ordenes-test-test.rule=Host(`apps.chaide.com`) && PathPrefix(`/proord2/api`)"
+      # - "traefik.http.routers.prod-ordenes-test-test.entrypoints=websecure"
+      # - "traefik.http.routers.prod-ordenes-test-test.tls.certresolver=myresolver"
+      # - "traefik.http.middlewares.prod-ordenes-test-test-strip.stripprefix.prefixes=/proord/api"
+      # - "traefik.http.routers.prod-ordenes-test-test.middlewares=prod-ordenes-test-test-strip@docker"
+      # - "traefik.http.services.prod-ordenes-test-test.loadbalancer.server.port=5400"
+
+      # --- Habilitar Traefik ---
+      - "traefik.enable=true"
+      - "traefik.docker.network=traefik-net"
+      - "traefik.http.routers.prod-ordenes.rule=Host(`apps.chaide.com`) && PathPrefix(`/proord/api`)"
+      - "traefik.http.routers.prod-ordenes.entrypoints=websecure"
+      - "traefik.http.routers.prod-ordenes.tls=true"
+      - "traefik.http.middlewares.prod-ordenes-strip.stripprefix.prefixes=/proord/api"
+      - "traefik.http.routers.prod-ordenes.middlewares=prod-ordenes-strip@docker"
+      - "traefik.http.services.prod-ordeness.loadbalancer.server.port=5400"
+networks:
+  traefik-net:
+    external: true

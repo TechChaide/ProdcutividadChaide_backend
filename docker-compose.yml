@@ -1,7 +1,7 @@
 services:
   productividad-ordenes-service_test:
     build: . # <-- AÑADE ESTA LÍNEA
-    image: cachaide/productividad-ordenes-backend:4.0
+    image: techchaide/productividad-ordenes-backend:5.0
     container_name: prod_ord_service_test
     restart: unless-stopped
     env_file:
@@ -27,7 +27,7 @@ services:
       - "traefik.http.routers.prod-ordenes.tls=true"
       - "traefik.http.middlewares.prod-ordenes-strip.stripprefix.prefixes=/proord/api"
       - "traefik.http.routers.prod-ordenes.middlewares=prod-ordenes-strip@docker"
-      - "traefik.http.services.prod-ordeness.loadbalancer.server.port=5400"
+      - "traefik.http.services.prod-ordenes.loadbalancer.server.port=5400"
 networks:
   traefik-net:
     external: true

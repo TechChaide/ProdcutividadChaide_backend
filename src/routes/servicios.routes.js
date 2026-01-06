@@ -10,6 +10,7 @@ const {
   getOrdenPPH,
   getOrdenesReimpresion,
   getImpresionPlastificado,
+  cargarOrdenes,
 } = require("../controllers/servicios.controller");
 
 router.post("/ordenes", getOrdenesProduccion);
@@ -23,4 +24,5 @@ router.post("/reprintPlastificado", getImpresionPlastificado);
 
 router.post("/order", getOrdenPPH);
 router.post("/reprint_order", getOrdenesReimpresion);
+router.post("/cargar_ordenes", cargarOrdenes);
 module.exports = router;

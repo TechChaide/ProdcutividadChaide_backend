@@ -14,19 +14,17 @@ WORKDIR /app
 COPY package*.json ./
 RUN npm install
 
+# Instalar dos2unix para convertir terminaciones de línea de Windows (CRLF) a Linux (LF)
+RUN apk add --no-cache dos2unix
+
 # Copiar el resto del código del backend
 COPY . .
 
+# Convertir el script de entrypoint a formato Unix y darle permisos
+RUN dos2unix entrypoint.sh && chmod +x entrypoint.sh
+
 # Exponer el puerto en el que corre tu API
 EXPOSE 5400
-
-# ----- AÑADE ESTAS LÍNEAS -----
-
-# Copia el script de inicio al contenedor
-COPY entrypoint.sh .
-
-# Dale permisos de ejecución al script
-RUN chmod +x ./entrypoint.sh
 
 # Establece el script como el comando a ejecutar al iniciar el contenedor
 CMD ["./entrypoint.sh"]

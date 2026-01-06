@@ -293,6 +293,39 @@ const getImpresionPlastificado = async (req, res) => {
 };
 
 
+
+// --- Controlador para Cargar Ordenes (Cambio Descripción) ---
+const cargarOrdenes = async (req, res) => {
+  try {
+    const { orden, descripcion, almacen } = req.body;
+
+    if (!orden || !descripcion || !almacen) {
+      return res.status(400).json({
+        msg: "Faltan parámetros: orden, descripcion y almacen son requeridos.",
+      });
+    }
+
+    const resultados = await db.sequelize.query(
+      `EXEC [${process.env.DB_NAME}].[dbo].[sp_InsertarOrdenCambioDescripcion] :Orden, :Descripcion, :Almacen`,
+      {
+        replacements: {
+          Orden: orden,
+          Descripcion: descripcion,
+          Almacen: almacen,
+        },
+        type: QueryTypes.SELECT,
+      }
+    );
+
+    res.status(200).json({ data: resultados, msg: "Orden actualizada correctamente." });
+  } catch (error) {
+    console.error("Error al cargar ordenes:", error);
+    res.status(500).json({
+      msg: "Error en el servidor al cargar las ordenes.",
+    });
+  }
+};
+
 module.exports = {
   // ... tus otras funciones de controlador
   getOrdenesProduccion,
@@ -304,4 +337,6 @@ module.exports = {
   getOrdenPPH,
   getOrdenesReimpresion,
   getImpresionPlastificado,
+  cargarOrdenes,
 };
+

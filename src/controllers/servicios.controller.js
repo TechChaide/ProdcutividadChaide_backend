@@ -326,6 +326,38 @@ const cargarOrdenes = async (req, res) => {
   }
 };
 
+
+// --- Controlador para Cargar Ordenes (Cambio Descripción) ---
+const buscarMaterialesPorMaterialCentro = async (req, res) => {
+  try {
+    const { material, centro } = req.body;
+
+    if (!material || !centro) {
+      return res.status(400).json({
+        msg: "Faltan parámetros: material y centro son requeridos.",
+      });
+    }
+
+    const resultados = await db.sequelize.query(
+      `EXEC [${process.env.DB_NAME}].[dbo].[sp_ObtenerMaterialesPorOrden] :Material, :Centro`,
+      {
+        replacements: {
+          Material: material,
+          Centro: centro
+        },
+        type: QueryTypes.SELECT,
+      }
+    );
+
+    res.status(200).json({ data: resultados, length: resultados.length });
+  } catch (error) {
+    console.error("Error al cargar ordenes:", error);
+    res.status(500).json({
+      msg: "Error en el servidor al cargar las ordenes.",
+    });
+  }
+};
+
 module.exports = {
   // ... tus otras funciones de controlador
   getOrdenesProduccion,
@@ -338,5 +370,6 @@ module.exports = {
   getOrdenesReimpresion,
   getImpresionPlastificado,
   cargarOrdenes,
+  buscarMaterialesPorMaterialCentro,
 };
 

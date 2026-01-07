@@ -11,6 +11,7 @@ const {
   getOrdenesReimpresion,
   getImpresionPlastificado,
   cargarOrdenes,
+  buscarMaterialesPorMaterialCentro,
 } = require("../controllers/servicios.controller");
 
 router.post("/ordenes", getOrdenesProduccion);
@@ -25,4 +26,6 @@ router.post("/reprintPlastificado", getImpresionPlastificado);
 router.post("/order", getOrdenPPH);
 router.post("/reprint_order", getOrdenesReimpresion);
 router.post("/cargar_ordenes", cargarOrdenes);
+
+router.post("/getElementsByCentroAndFert", buscarMaterialesPorMaterialCentro);
 module.exports = router;

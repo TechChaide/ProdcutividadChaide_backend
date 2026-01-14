@@ -85,9 +85,9 @@ const sequelize = new Sequelize(
     },
     logging: false,
     pool: {
-      max: 5,
+      max: 20,
       min: 0,
-      acquire: 30000,
+      acquire: 60000,
       idle: 10000,
     },
     define: {
@@ -116,9 +116,9 @@ const sequelize2 = new Sequelize(
     },
     logging: false,
     pool: {
-      max: 5,
+      max: 20,
       min: 0,
-      acquire: 30000,
+      acquire: 60000,
       idle: 10000,
     },
     define: {

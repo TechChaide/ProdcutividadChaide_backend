@@ -12,12 +12,22 @@ module.exports = {
                 identificacion_producto,
                 
                 nombre_producto,
+
+                material_fert,
                 
                 fecha_cambio,
                 
                 tipo_cambio,
 
-                materiales_cambio,
+                material_cambio,
+                
+                material_cambio_nombre,
+                
+                material_cambio_unidad,
+
+                material_cambio_cantidad,
+                
+                solicitante,
                 
                 operador,
                 
@@ -51,11 +61,16 @@ module.exports = {
                 // Create new record (fecha_cambio omitted so DB GETDATE() is used)
                 const newRecord = await Log_cambio_plasticos.create({
                     identificacion_producto: identificacion_producto,
-                    nombre_producto: nombre_producto,
-                    materiales_cambio: materiales_cambio,
                     tipo_cambio: tipo_cambio,
+                    nombre_producto: nombre_producto,
+                    material_fert: material_fert,
+                    material_cambio: material_cambio,
+                    material_cambio_nombre: material_cambio_nombre,
+                    material_cambio_unidad: material_cambio_unidad,
+                    material_cambio_cantidad: material_cambio_cantidad,
                     operador: operador,
                     colaboradores: colaboradores,
+                    solicitante: solicitante,
                     estacion: estacion,
                     tiempo_empleado: tiempo_empleado,
                     estado: estado
@@ -88,10 +103,20 @@ module.exports = {
                 record.identificacion_producto = identificacion_producto ?? record.identificacion_producto;
                 
                 record.nombre_producto = nombre_producto ?? record.nombre_producto;
+
+                record.material_fert = material_fert ?? record.material_fert;
                 
                 record.fecha_cambio = fecha_cambio ?? record.fecha_cambio;
                 
-                record.materiales_cambio = materiales_cambio ?? record.materiales_cambio;
+                record.material_cambio = material_cambio ?? record.material_cambio;
+                
+                record.material_cambio_nombre = material_cambio_nombre ?? record.material_cambio_nombre;
+                
+                record.material_cambio_unidad = material_cambio_unidad ?? record.material_cambio_unidad;
+
+                record.material_cambio_cantidad = material_cambio_cantidad ?? record.material_cambio_cantidad;
+                
+                record.solicitante = solicitante ?? record.solicitante;
                 
                 record.tipo_cambio = tipo_cambio ?? record.tipo_cambio;
                 

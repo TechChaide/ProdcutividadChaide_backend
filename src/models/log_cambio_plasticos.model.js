@@ -22,13 +22,29 @@ module.exports = (sequelize) => {
         nombre_producto: {
             type: DataTypes.STRING
         },
+
+        material_fert: {
+            type: DataTypes.STRING
+        },
         
         fecha_cambio: {
             type: DataTypes.DATE,
             defaultValue: sequelize.literal('GETDATE()')
         },
         
-        materiales_cambio: {
+        material_cambio: {
+            type: DataTypes.TEXT
+        },
+
+        material_cambio_nombre: {
+            type: DataTypes.TEXT
+        },
+
+        material_cambio_unidad: {
+            type: DataTypes.TEXT
+        },
+
+        material_cambio_cantidad: {
             type: DataTypes.TEXT
         },
         
@@ -37,6 +53,10 @@ module.exports = (sequelize) => {
         },
         
         colaboradores: {
+            type: DataTypes.STRING
+        },
+
+        solicitante: {
             type: DataTypes.STRING
         },
         
@@ -53,7 +73,7 @@ module.exports = (sequelize) => {
         }
         
     }, {
-        tableName: 'log_cambio_plasticos',
+        tableName: 'log_cambio_plasticos2',
         schema: 'dbo',
         timestamps: false,
         id: false

@@ -45,7 +45,7 @@ module.exports = (sequelize) => {
         },
 
         material_cambio_cantidad: {
-            type: DataTypes.TEXT
+            type: DataTypes.DECIMAL(18, 2)
         },
         
         operador: {
@@ -65,7 +65,7 @@ module.exports = (sequelize) => {
         },
         
         tiempo_empleado: {
-            type: DataTypes.STRING
+            type: DataTypes.FLOAT
         },
         
         estado: {

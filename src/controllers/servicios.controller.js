@@ -358,6 +358,124 @@ const buscarMaterialesPorMaterialCentro = async (req, res) => {
   }
 };
 
+
+
+//////////////////////////////Funciones de Dashboard para cambios de plastico
+
+const getProcesosPorSolicitante = async (req, res) => {
+  try {
+
+    // 1. Ejecuta el Stored Procedure en la segunda base de datos (sequelize2)
+    const resultados = await db.sequelize.query(
+      `EXEC [${process.env.DB_NAME}].[dbo].[sp_GetProcesosPorSolicitante]`,
+      {
+        type: QueryTypes.SELECT,
+      }
+    );
+
+    // 4. Envía los resultados como respuesta
+    res.status(200).json({ data: resultados, length: resultados.length });
+  } catch (error) {
+    console.error("Error al consultar Procesos:", error);
+    res.status(500).json({
+      msg: "Error en el servidor al consultar los Procesos.",
+    });
+  }
+};
+
+
+const getProcesosPorTipoCambio = async (req, res) => {
+  try {
+
+    // 1. Ejecuta el Stored Procedure en la segunda base de datos (sequelize2)
+    const resultados = await db.sequelize.query(
+      `EXEC [${process.env.DB_NAME}].[dbo].[sp_GetResumenCambiosPlastico]`,
+      {
+        type: QueryTypes.SELECT,
+      }
+    );
+
+    // 4. Envía los resultados como respuesta
+    res.status(200).json({ data: resultados, length: resultados.length });
+  } catch (error) {
+    console.error("Error al consultar Procesos:", error);
+    res.status(500).json({
+      msg: "Error en el servidor al consultar los Procesos.",
+    });
+  }
+};
+
+const getPUltimosProcesosPorProductos = async (req, res) => {
+  try {
+
+    // 1. Ejecuta el Stored Procedure en la segunda base de datos (sequelize2)
+    const resultados = await db.sequelize.query(
+      `EXEC [${process.env.DB_NAME}].[dbo].[sp_GetUltimosEstadosProductos]`,
+      {
+        type: QueryTypes.SELECT,
+      }
+    );
+
+    // 4. Envía los resultados como respuesta
+    res.status(200).json({ data: resultados, length: resultados.length });
+  } catch (error) {
+    console.error("Error al consultar Procesos:", error);
+    res.status(500).json({
+      msg: "Error en el servidor al consultar los Procesos.",
+    });
+  }
+};
+
+
+
+const getMaterialesCambiados = async (req, res) => {
+  try {
+
+    // 1. Ejecuta el Stored Procedure en la segunda base de datos (sequelize2)
+    const resultados = await db.sequelize.query(
+      `EXEC [${process.env.DB_NAME}].[dbo].[sp_GetMaterialesCambiados]`,
+      {
+        type: QueryTypes.SELECT,
+      }
+    );
+
+    // 4. Envía los resultados como respuesta
+    res.status(200).json({ data: resultados, length: resultados.length });
+  } catch (error) {
+    console.error("Error al consultar Procesos:", error);
+    res.status(500).json({
+      msg: "Error en el servidor al consultar los Procesos.",
+    });
+  }
+};
+
+
+const getMaterialesCambiadosPorFechas = async (req, res) => {
+  try {
+
+    const { fechaInicio, fechaFin } = req.body;
+
+    // 1. Ejecuta el Stored Procedure en la segunda base de datos (sequelize2)
+    const resultados = await db.sequelize.query(
+      `EXEC [${process.env.DB_NAME}].[dbo].[sp_ObtenerCambiosPlasticosPorFechas] :FechaInicio, :FechaFin`,
+      {
+        replacements: { FechaInicio: fechaInicio, FechaFin: fechaFin },
+        type: QueryTypes.SELECT,
+      }
+    );
+
+    // 4. Envía los resultados como respuesta
+    res.status(200).json({ data: resultados, length: resultados.length });
+  } catch (error) {
+    console.error("Error al consultar Procesos:", error);
+    res.status(500).json({
+      msg: "Error en el servidor al consultar los Procesos.",
+    });
+  }
+};
+
+//////////////////////////////////////////////////////////////////////////////
+
 module.exports = {
   // ... tus otras funciones de controlador
   getOrdenesProduccion,
@@ -371,5 +489,10 @@ module.exports = {
   getImpresionPlastificado,
   cargarOrdenes,
   buscarMaterialesPorMaterialCentro,
+  getProcesosPorSolicitante,
+  getProcesosPorTipoCambio,
+  getPUltimosProcesosPorProductos,
+  getMaterialesCambiados,
+  getMaterialesCambiadosPorFechas
 };
 

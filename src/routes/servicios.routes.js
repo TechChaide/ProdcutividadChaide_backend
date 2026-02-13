@@ -12,6 +12,13 @@ const {
   getImpresionPlastificado,
   cargarOrdenes,
   buscarMaterialesPorMaterialCentro,
+
+  getProcesosPorSolicitante,
+  getProcesosPorTipoCambio,
+  getPUltimosProcesosPorProductos,
+  getMaterialesCambiados,
+  getMaterialesCambiadosPorFechas,
+
 } = require("../controllers/servicios.controller");
 
 router.post("/ordenes", getOrdenesProduccion);
@@ -28,4 +35,12 @@ router.post("/reprint_order", getOrdenesReimpresion);
 router.post("/cargar_ordenes", cargarOrdenes);
 
 router.post("/getElementsByCentroAndFert", buscarMaterialesPorMaterialCentro);
+
+//////////////////Endpoints para el dashboard de Cambios de Plásticos
+router.get("/UltimosCambios", getPUltimosProcesosPorProductos);
+router.get("/ProcesosPorTipoCambio", getProcesosPorTipoCambio);
+router.get("/getProcesosPorSolicitante", getProcesosPorSolicitante);
+
+router.get("/getMaterialesCambiados", getMaterialesCambiados);
+router.post("/getMaterialesCambiadosPorFechas", getMaterialesCambiadosPorFechas);
 module.exports = router;

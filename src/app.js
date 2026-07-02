@@ -29,6 +29,8 @@ const serviciosRoutes = require("./routes/servicios.routes");
 const sesionRoutes = require('./routes/sesion.routes');
 const authRoutes = require("./routes/auth.routes");
 
+const serviciosDashboardRoutes = require("./routes/servicios_dashboard.routes");
+
 // Middlewares
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
@@ -52,6 +54,8 @@ app.use("/api/ORDEN-EMPLEADO-PNCs", ORDENEmpleadoPNCRoutes);
 app.use("/api/servicios", serviciosRoutes);
 app.use('/api/sesions', sesionRoutes);
 app.use("/api/auths", authRoutes);
+
+app.use("/api/dsh-Servicios", serviciosDashboardRoutes);
 
 // Error handling middleware
 app.use((err, req, res, next) => {

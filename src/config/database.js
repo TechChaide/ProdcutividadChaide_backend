@@ -80,7 +80,7 @@ const sequelize = new Sequelize(
         encrypt: false,
         enableArithAbort: true,
         trustServerCertificate: true,
-        requestTimeout: 70000 
+        requestTimeout: 600000 
       },
     },
     logging: false,

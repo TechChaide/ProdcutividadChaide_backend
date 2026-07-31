@@ -2,3 +2,9 @@ node_modules
 .git
 .gitignore
 .env
+dist
+*.sql
+*.lnk
+docker-compose.yml
+Dockerfile
+.dockerignore

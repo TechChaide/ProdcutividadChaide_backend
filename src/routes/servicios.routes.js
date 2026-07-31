@@ -18,6 +18,11 @@ const {
   getPUltimosProcesosPorProductos,
   getMaterialesCambiados,
   getMaterialesCambiadosPorFechas,
+  insertarPreNotificacion,
+  getOrdenesCorteTelaListaPorFecha,
+  getOrdenCorteTelaPorOrden,
+  getPreNotificacionesPorFecha,
+  getPreNotificacionPorOrden,
 
 } = require("../controllers/servicios.controller");
 
@@ -43,4 +48,12 @@ router.get("/getProcesosPorSolicitante", getProcesosPorSolicitante);
 
 router.get("/getMaterialesCambiados", getMaterialesCambiados);
 router.post("/getMaterialesCambiadosPorFechas", getMaterialesCambiadosPorFechas);
+
+//////////////////Endpoints para pre-notificaciones
+router.post("/insertarPreNotificacion", insertarPreNotificacion);
+router.post("/ordenesCorteTelaListaPorFecha", getOrdenesCorteTelaListaPorFecha);
+router.post("/ordenCorteTelaPorOrden", getOrdenCorteTelaPorOrden);
+router.post("/preNotificacionesPorFecha", getPreNotificacionesPorFecha);
+router.post("/preNotificacionPorOrden", getPreNotificacionPorOrden);
+
 module.exports = router;

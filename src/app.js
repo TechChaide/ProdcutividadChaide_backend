@@ -29,6 +29,12 @@ const serviciosRoutes = require("./routes/servicios.routes");
 const sesionRoutes = require('./routes/sesion.routes');
 const authRoutes = require("./routes/auth.routes");
 
+
+const detalle_movimientoRoutes = require('./routes/detalle_movimiento.routes');
+const ingresosRoutes = require('./routes/ingresos.routes');
+const movimientoRoutes = require('./routes/movimiento.routes');
+
+
 const serviciosDashboardRoutes = require("./routes/servicios_dashboard.routes");
 
 // Middlewares
@@ -56,6 +62,10 @@ app.use('/api/sesions', sesionRoutes);
 app.use("/api/auths", authRoutes);
 
 app.use("/api/dsh-Servicios", serviciosDashboardRoutes);
+
+app.use('/api/detalle_movimiento', detalle_movimientoRoutes);
+app.use('/api/ingresos', ingresosRoutes);
+app.use('/api/movimiento', movimientoRoutes);
 
 // Error handling middleware
 app.use((err, req, res, next) => {

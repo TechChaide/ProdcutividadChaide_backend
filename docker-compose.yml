@@ -1,7 +1,7 @@
 services:
   productividad-ordenes-service_test:
     build: . # <-- AÑADE ESTA LÍNEA
-    image: techchaide/productividad-ordenes-backend:5.0
+    image: techchaide/productividad-ordenes-backend:5.1
     container_name: prod_ord_service_test
     restart: unless-stopped
     env_file:

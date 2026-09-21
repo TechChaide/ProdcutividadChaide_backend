@@ -9,6 +9,12 @@ module.exports = (sequelize) => {
             allowNull: false,
             primaryKey: true
         },
+
+        centro: {
+            type: DataTypes.STRING,
+            allowNull: false,
+            defaultValue: '1000'
+        },
         
         identificacion_producto: {
             type: DataTypes.STRING,

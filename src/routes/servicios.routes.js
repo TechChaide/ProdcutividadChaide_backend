@@ -23,6 +23,8 @@ const {
   getOrdenCorteTelaPorOrden,
   getPreNotificacionesPorFecha,
   getPreNotificacionPorOrden,
+  insertarLogPlanchasEspumaPrensado,
+  buscarOrdenesPlanchasEspumaPrensado,
 
 } = require("../controllers/servicios.controller");
 
@@ -55,5 +57,9 @@ router.post("/ordenesCorteTelaListaPorFecha", getOrdenesCorteTelaListaPorFecha);
 router.post("/ordenCorteTelaPorOrden", getOrdenCorteTelaPorOrden);
 router.post("/preNotificacionesPorFecha", getPreNotificacionesPorFecha);
 router.post("/preNotificacionPorOrden", getPreNotificacionPorOrden);
+
+//////////////////Endpoints para planchas de espuma prensado
+router.post("/insertarLogPlanchasEspumaPrensado", insertarLogPlanchasEspumaPrensado);
+router.post("/buscarOrdenesPlanchasEspumaPrensado", buscarOrdenesPlanchasEspumaPrensado);
 
 module.exports = router;

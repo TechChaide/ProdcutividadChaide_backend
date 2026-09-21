@@ -37,7 +37,9 @@ module.exports = {
                 
                 tiempo_empleado,
                 
-                estado
+                estado,
+
+                centro
                 
             } = req.body;
 
@@ -73,7 +75,8 @@ module.exports = {
                     solicitante: solicitante,
                     estacion: estacion,
                     tiempo_empleado: tiempo_empleado,
-                    estado: estado
+                    estado: estado,
+                    centro: centro
                 });
 
                 const response = await Log_cambio_plasticos.findByPk(newRecord.codigo_log_cp, {
@@ -101,6 +104,7 @@ module.exports = {
                 // Update fields
                 
                 record.identificacion_producto = identificacion_producto ?? record.identificacion_producto;
+                record.centro = centro ?? record.centro;
                 
                 record.nombre_producto = nombre_producto ?? record.nombre_producto;
 

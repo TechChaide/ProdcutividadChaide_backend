@@ -674,6 +674,90 @@ const getPreNotificacionPorOrden = async (req, res) => {
   }
 };
 
+// --- Controlador para Insertar Log de Planchas de Espuma Prensado ---
+const insertarLogPlanchasEspumaPrensado = async (req, res) => {
+  try {
+    const {
+      codbarras,
+      orden,
+      operador,
+      secuencial,
+      producto,
+      netiqueta,
+      codPedido,
+    } = req.body;
+
+    if (
+      codbarras === undefined ||
+      orden === undefined ||
+      operador === undefined ||
+      secuencial === undefined ||
+      producto === undefined ||
+      netiqueta === undefined ||
+      codPedido === undefined
+    ) {
+      return res.status(400).json({
+        msg: "Faltan parámetros: codbarras, orden, operador, secuencial, producto, netiqueta y codPedido son requeridos.",
+      });
+    }
+
+    const resultados = await db.sequelize.query(
+      `EXEC [RFID].[dbo].[sp_InsertLOGPlanchasEspumaPrensado] :codbarras, :orden, :operador, :secuencial, :producto, :netiqueta, :Codpedido`,
+      {
+        replacements: {
+          codbarras: codbarras,
+          orden: orden,
+          operador: operador,
+          secuencial: secuencial,
+          producto: producto,
+          netiqueta: netiqueta,
+          Codpedido: codPedido,
+        },
+        type: QueryTypes.SELECT,
+      }
+    );
+
+    res.status(201).json({ data: resultados, length: resultados.length });
+  } catch (error) {
+    console.error("Error al insertar el log de planchas de espuma prensado:", error);
+    res.status(500).json({
+      msg: "Error en el servidor al insertar el log de planchas de espuma prensado.",
+    });
+  }
+};
+
+// --- Controlador para Buscar Órdenes de Planchas de Espuma Prensado ---
+const buscarOrdenesPlanchasEspumaPrensado = async (req, res) => {
+  try {
+    const { fechaInicio, fechaFin, centro } = req.body;
+
+    if (!fechaInicio || !fechaFin || !centro) {
+      return res.status(400).json({
+        msg: "Faltan parámetros: fechaInicio, fechaFin y centro son requeridos.",
+      });
+    }
+
+    const resultados = await db.sequelize.query(
+      `EXEC [${process.env.DB_NAME}].[dbo].[sp_BuscaOrdenesPlanchasEspumaPrensado] :FechaINI, :FechaFIN, :Centro`,
+      {
+        replacements: {
+          FechaINI: fechaInicio,
+          FechaFIN: fechaFin,
+          Centro: centro,
+        },
+        type: QueryTypes.SELECT,
+      }
+    );
+
+    res.status(200).json({ data: resultados, length: resultados.length });
+  } catch (error) {
+    console.error("Error al buscar las órdenes de planchas de espuma prensado:", error);
+    res.status(500).json({
+      msg: "Error en el servidor al buscar las órdenes de planchas de espuma prensado.",
+    });
+  }
+};
+
 module.exports = {
   // ... tus otras funciones de controlador
   getOrdenesProduccion,
@@ -696,6 +780,8 @@ module.exports = {
   getOrdenesCorteTelaListaPorFecha,
   getOrdenCorteTelaPorOrden,
   getPreNotificacionesPorFecha,
-  getPreNotificacionPorOrden
+  getPreNotificacionPorOrden,
+  insertarLogPlanchasEspumaPrensado,
+  buscarOrdenesPlanchasEspumaPrensado
 };
 

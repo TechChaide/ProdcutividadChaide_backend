@@ -25,6 +25,9 @@ const {
   getPreNotificacionPorOrden,
   insertarLogPlanchasEspumaPrensado,
   buscarOrdenesPlanchasEspumaPrensado,
+  buscarSecuencialPrensado,
+  cambiarEstadoEtiquetasPrensado,
+  buscarEtiquetasXOrdenPrensado,
 
 } = require("../controllers/servicios.controller");
 
@@ -61,5 +64,8 @@ router.post("/preNotificacionPorOrden", getPreNotificacionPorOrden);
 //////////////////Endpoints para planchas de espuma prensado
 router.post("/insertarLogPlanchasEspumaPrensado", insertarLogPlanchasEspumaPrensado);
 router.post("/buscarOrdenesPlanchasEspumaPrensado", buscarOrdenesPlanchasEspumaPrensado);
+router.get("/buscarSecuencialPrensado", buscarSecuencialPrensado);
+router.post("/cambiarEstadoEtiquetasPrensado", cambiarEstadoEtiquetasPrensado);
+router.post("/buscarEtiquetasXOrdenPrensado", buscarEtiquetasXOrdenPrensado);
 
 module.exports = router;

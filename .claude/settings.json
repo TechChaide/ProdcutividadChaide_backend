@@ -1,0 +1,10 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(node -e ' *)",
+      "Bash(curl -s --max-time 15 -X POST http://localhost:5400/api/servicios/buscarEtiquetasXOrdenPrensado -H \"Content-Type: application/json\" -d '{\"orden\":\"62808871\"}')",
+      "Bash(curl -s --max-time 15 -X POST http://localhost:5400/api/servicios/cambiarEstadoEtiquetasPrensado -H \"Content-Type: application/json\" -d '{\"orden\":\"NOEXISTE999\",\"netiqueta\":1,\"codUsuario\":\"OP01\"}')",
+      "Bash(curl -s --max-time 15 -X POST http://localhost:5400/api/servicios/cambiarEstadoEtiquetasPrensado -H \"Content-Type: application/json\" -d '{\"orden\":\"62808871\",\"netiqueta\":1}')"
+    ]
+  }
+}

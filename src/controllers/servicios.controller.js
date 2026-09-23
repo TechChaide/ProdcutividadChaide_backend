@@ -702,7 +702,7 @@ const insertarLogPlanchasEspumaPrensado = async (req, res) => {
     }
 
     const resultados = await db.sequelize.query(
-      `EXEC [RFID].[dbo].[sp_InsertLOGPlanchasEspumaPrensado] :codbarras, :orden, :operador, :secuencial, :producto, :netiqueta, :Codpedido`,
+      `EXEC [${process.env.DB_NAME}].[dbo].[sp_InsertLOGPlanchasEspumaPrensado] :codbarras, :orden, :operador, :secuencial, :producto, :netiqueta, :Codpedido`,
       {
         replacements: {
           codbarras: codbarras,
@@ -758,6 +758,91 @@ const buscarOrdenesPlanchasEspumaPrensado = async (req, res) => {
   }
 };
 
+// --- Controlador para Buscar el Último Secuencial de Prensado del Día ---
+const buscarSecuencialPrensado = async (req, res) => {
+  try {
+    const resultados = await db.sequelize.query(
+      `EXEC [${process.env.DB_NAME}].[dbo].[sp_BuscaSecuencialPrensado]`,
+      {
+        type: QueryTypes.SELECT,
+      }
+    );
+
+    res.status(200).json({ data: resultados, length: resultados.length });
+  } catch (error) {
+    console.error("Error al buscar el secuencial de prensado:", error);
+    res.status(500).json({
+      msg: "Error en el servidor al buscar el secuencial de prensado.",
+    });
+  }
+};
+
+// --- Controlador para Cambiar el Estado de las Etiquetas de Prensado ---
+const cambiarEstadoEtiquetasPrensado = async (req, res) => {
+  try {
+    const { orden, netiqueta, codUsuario } = req.body;
+
+    if (
+      orden === undefined ||
+      netiqueta === undefined ||
+      codUsuario === undefined
+    ) {
+      return res.status(400).json({
+        msg: "Faltan parámetros: orden, netiqueta y codUsuario son requeridos.",
+      });
+    }
+
+    const resultados = await db.sequelize.query(
+      `EXEC [${process.env.DB_NAME}].[dbo].[sp_CambiaEstadoEtiquetasPrensado] :orden, :netiqueta, :CodUsuario`,
+      {
+        replacements: {
+          orden: orden,
+          netiqueta: netiqueta,
+          CodUsuario: codUsuario,
+        },
+        type: QueryTypes.SELECT,
+      }
+    );
+
+    res.status(200).json({ data: resultados, length: resultados.length });
+  } catch (error) {
+    console.error("Error al cambiar el estado de las etiquetas de prensado:", error);
+    res.status(500).json({
+      msg: "Error en el servidor al cambiar el estado de las etiquetas de prensado.",
+    });
+  }
+};
+
+// --- Controlador para Buscar Etiquetas por Orden de Prensado ---
+const buscarEtiquetasXOrdenPrensado = async (req, res) => {
+  try {
+    const { orden } = req.body;
+
+    if (!orden) {
+      return res.status(400).json({
+        msg: 'El parámetro "orden" es requerido.',
+      });
+    }
+
+    const resultados = await db.sequelize.query(
+      `EXEC [${process.env.DB_NAME}].[dbo].[sp_BuscaEtiquetasXOrdenPrensado] :orden`,
+      {
+        replacements: {
+          orden: orden,
+        },
+        type: QueryTypes.SELECT,
+      }
+    );
+
+    res.status(200).json({ data: resultados, length: resultados.length });
+  } catch (error) {
+    console.error("Error al buscar las etiquetas por orden de prensado:", error);
+    res.status(500).json({
+      msg: "Error en el servidor al buscar las etiquetas por orden de prensado.",
+    });
+  }
+};
+
 module.exports = {
   // ... tus otras funciones de controlador
   getOrdenesProduccion,
@@ -782,6 +867,9 @@ module.exports = {
   getPreNotificacionesPorFecha,
   getPreNotificacionPorOrden,
   insertarLogPlanchasEspumaPrensado,
-  buscarOrdenesPlanchasEspumaPrensado
+  buscarOrdenesPlanchasEspumaPrensado,
+  buscarSecuencialPrensado,
+  cambiarEstadoEtiquetasPrensado,
+  buscarEtiquetasXOrdenPrensado
 };
 

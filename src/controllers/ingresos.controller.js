@@ -87,7 +87,10 @@ module.exports = {
 
             const { count, rows } = await Ingresos.findAndCountAll({
                 limit: parseInt(limit),
-                offset: parseInt(offset)
+                offset: parseInt(offset),
+                where: {
+                    estado: 'A'
+                }
             });
 
             return res.status(200).json({
@@ -122,6 +125,34 @@ module.exports = {
             });
         } catch (error) {
             handleError(res, error, 'Error fetching record by ID');
+        }
+    },
+
+    // Buscar ingreso activo por código QR / BMP
+    getByQR: async (req, res) => {
+        try {
+            const { qr_bmp, Codigo } = req.body;
+            const codigoQr = String(qr_bmp || Codigo || '').trim();
+
+            if (!codigoQr) {
+                return res.status(400).json({
+                    error: 'Faltan parámetros: qr_bmp (o Codigo) es requerido.'
+                });
+            }
+
+            const records = await Ingresos.findAll({
+                where: {
+                    qr_bmp: codigoQr,
+                    estado: 'A'
+                }
+            });
+
+            return res.status(200).json({
+                data: records,
+                length: records.length
+            });
+        } catch (error) {
+            handleError(res, error, 'Error fetching record by QR');
         }
     },
 

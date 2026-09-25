@@ -87,7 +87,10 @@ module.exports = {
                 offset: parseInt(offset),
                 include: [
                     { model: Movimiento, as: 'movimiento' }
-                ]
+                ],
+                where: {
+                    estado: 'A'
+                }
             });
 
             return res.status(200).json({

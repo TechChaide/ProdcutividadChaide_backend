@@ -15,15 +15,16 @@ module.exports = (sequelize) => {
         },
         
         orden: {
-            type: DataTypes.STRING
+            type: DataTypes.STRING(50)
         },
         
+        /** Consumo real del material asignado a la orden. */
         cantidad_utilizada: {
-            type: DataTypes.INTEGER
+            type: DataTypes.DECIMAL(18, 4)
         },
         
         estado: {
-            type: DataTypes.STRING
+            type: DataTypes.STRING(1)
         },
         
         fecha_modificacion: {
@@ -31,7 +32,7 @@ module.exports = (sequelize) => {
         },
         
         usuario_modificacion: {
-            type: DataTypes.STRING
+            type: DataTypes.STRING(50)
         }
         
     }, {

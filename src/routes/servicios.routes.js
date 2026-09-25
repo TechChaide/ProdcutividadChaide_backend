@@ -29,6 +29,13 @@ const {
   cambiarEstadoEtiquetasPrensado,
   buscarEtiquetasXOrdenPrensado,
 
+  getBodegasPorCentro,
+  geetInformacionQR,
+  geetInformacionMaterial,
+  getMaterialesPivoteadosByCodigoFertPrincipal,
+  getMaterialesPivoteadosByMaterial,
+  getMovimientosPorIngreso,
+
 } = require("../controllers/servicios.controller");
 
 router.post("/ordenes", getOrdenesProduccion);
@@ -67,5 +74,12 @@ router.post("/buscarOrdenesPlanchasEspumaPrensado", buscarOrdenesPlanchasEspumaP
 router.get("/buscarSecuencialPrensado", buscarSecuencialPrensado);
 router.post("/cambiarEstadoEtiquetasPrensado", cambiarEstadoEtiquetasPrensado);
 router.post("/buscarEtiquetasXOrdenPrensado", buscarEtiquetasXOrdenPrensado);
+
+router.get("/getBodegasPorCentro", getBodegasPorCentro);
+router.post("/getInformacionQR", geetInformacionQR);
+router.post("/getInformacionMaterial", geetInformacionMaterial);
+router.post("/MaterialesPivotFertPrincipal", getMaterialesPivoteadosByCodigoFertPrincipal);
+router.post("/MaterialesPivotPorMaterial", getMaterialesPivoteadosByMaterial);
+router.post("/MovimientosPorIngreso", getMovimientosPorIngreso);
 
 module.exports = router;

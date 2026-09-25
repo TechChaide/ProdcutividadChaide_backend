@@ -9,6 +9,8 @@ module.exports = {
                 codigo_movimiento,
                 tipo_movimiento,
                 cantidad_movimiento,
+                cantidad_estimada,
+                cantidad_desperdicio,
                 fecha_movimiento,
                 usuario_movimiento,
                 estado,
@@ -24,6 +26,8 @@ module.exports = {
                 const newRecord = await Movimiento.create({
                     tipo_movimiento: tipo_movimiento,
                     cantidad_movimiento: cantidad_movimiento,
+                    cantidad_estimada: cantidad_estimada,
+                    cantidad_desperdicio: cantidad_desperdicio,
                     fecha_movimiento: fecha_movimiento,
                     usuario_movimiento: usuario_movimiento,
                     estado: estado,
@@ -57,6 +61,8 @@ module.exports = {
                 // Update fields
                 if (tipo_movimiento !== undefined) record.tipo_movimiento = tipo_movimiento;
                 if (cantidad_movimiento !== undefined) record.cantidad_movimiento = cantidad_movimiento;
+                if (cantidad_estimada !== undefined) record.cantidad_estimada = cantidad_estimada;
+                if (cantidad_desperdicio !== undefined) record.cantidad_desperdicio = cantidad_desperdicio;
                 if (fecha_movimiento !== undefined) record.fecha_movimiento = fecha_movimiento;
                 if (usuario_movimiento !== undefined) record.usuario_movimiento = usuario_movimiento;
                 if (estado !== undefined) record.estado = estado;
@@ -93,7 +99,10 @@ module.exports = {
                 offset: parseInt(offset),
                 include: [
                     { model: Ingresos, as: 'ingresos' }
-                ]
+                ],
+                where: {
+                    estado: 'A'
+                }
             });
 
             return res.status(200).json({

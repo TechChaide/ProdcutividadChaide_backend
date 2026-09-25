@@ -843,6 +843,267 @@ const buscarEtiquetasXOrdenPrensado = async (req, res) => {
   }
 };
 
+
+
+
+const getBodegasPorCentro = async (req, res) => {
+  try {
+    const resultados = await db.sequelize.query(
+      `EXEC [${process.env.DB_NAME}].[dbo].[sp_Get_BodegasPlanta]`,
+      {
+        type: QueryTypes.SELECT,
+      }
+    );
+
+    res.status(200).json({ data: resultados, length: resultados.length });
+  } catch (error) {
+    console.error("Error al buscar las bodegas por centro:", error);
+    res.status(500).json({
+      msg: "Error en el servidor al buscar las bodegas por centro.",
+    });
+  }
+};
+
+
+const geetInformacionQR = async (req, res) => {
+  try {
+    const { Codigo } = req.body;
+
+    if (!Codigo) {
+      return res.status(400).json({
+        msg: "Faltan parámetros: Codigo es requerido.",
+      });
+    }
+
+    const resultados = await db.sequelize.query(
+      `EXEC [${process.env.DB_NAME}].[dbo].[sp_Get_informacionQr] :Codigo`,
+      {
+        replacements: {
+          Codigo: Codigo,
+        },
+        type: QueryTypes.SELECT,
+      }
+    );
+
+    res.status(200).json({ data: resultados, length: resultados.length });
+  } catch (error) {
+    console.error("Error al obtener la información del QR:", error);
+    res.status(500).json({
+      msg: "Error en el servidor al obtener la información del QR.",
+    });
+  }
+};
+
+
+const geetInformacionMaterial = async (req, res) => {
+  try {
+    const { Codigo, Centro } = req.body;
+
+    if (!Codigo || !Centro) {
+      return res.status(400).json({
+        msg: "Faltan parámetros: Codigo y Centro son requeridos.",
+      });
+    }
+
+    const resultados = await db.sequelize.query(
+      `EXEC [${process.env.DB_NAME}].[dbo].[sp_Get_informacionMaterial] :Codigo, :Centro`,
+      {
+        replacements: {
+          Codigo: Codigo,
+          Centro: Centro,
+        },
+        type: QueryTypes.SELECT,
+      }
+    );
+
+    res.status(200).json({ data: resultados, length: resultados.length });
+  } catch (error) {
+    console.error("Error al obtener la información del material:", error);
+    res.status(500).json({
+      msg: "Error en el servidor al obtener la información del material.",
+    });
+  }
+};
+
+
+const getMaterialesPivoteadosByCodigoFertPrincipal = async (req, res) => {
+  try {
+    // SP: @Codigo (semielaborado) + @Descripcion (nombre del material)
+    const Codigo = String(req.body?.Codigo || req.body?.Material || "").trim();
+    const Descripcion = String(
+      req.body?.Descripcion ||
+        req.body?.NombreMaterial ||
+        req.body?.Nombre ||
+        ""
+    ).trim();
+
+    if (!Codigo) {
+      return res.status(400).json({
+        msg: "Faltan parámetros: Codigo (material/semielaborado) es requerido.",
+      });
+    }
+
+    const resultados = await db.sequelize.query(
+      `EXEC [${process.env.DB_NAME}].[dbo].[sp_Get_MaterialesPivoteadosPorFertPrincipal]
+        @Codigo = :Codigo,
+        @Descripcion = :Descripcion`,
+      {
+        replacements: { Codigo, Descripcion },
+        type: QueryTypes.SELECT,
+      }
+    );
+
+    res.status(200).json({ data: resultados, length: resultados.length });
+  } catch (error) {
+    console.error("Error al obtener materiales pivoteados por semielaborado (Material):", error);
+    res.status(500).json({
+      msg: "Error en el servidor al obtener materiales pivoteados por semielaborado.",
+    });
+  }
+};
+
+/**
+ * Inverso: dado un material (tela/componente), devuelve los FERT que lo usan
+ * desde BI.dbo.ListaMaterialesNivelesPivoteado (todos los niveles).
+ */
+const getMaterialesPivoteadosByMaterial = async (req, res) => {
+  try {
+    const { Codigo } = req.body;
+    const codigo = String(Codigo || "").trim();
+
+    if (!codigo) {
+      return res.status(400).json({
+        msg: "Faltan parámetros: Codigo es requerido.",
+      });
+    }
+
+    const resultados = await db.sequelize.query(
+      `
+      SELECT
+        NIVEL,
+        CENTRO,
+        FERT_PRINCIPAL,
+        DESCRIPCION_FERT,
+        MATERIAL_PADRE,
+        DESCRIPCION_PADRE,
+        COMPONENTE,
+        DESCRIPCION_COMPONENTE,
+        CANTIDAD_UNITARIA,
+        CANTIDAD_ACUMULADA
+      FROM [BI].[dbo].[ListaMaterialesNivelesPivoteado]
+      WHERE
+        RIGHT(REPLICATE('0', 18) + LTRIM(RTRIM(CAST(MATERIAL_PADRE AS VARCHAR(50)))), 18)
+          = RIGHT(REPLICATE('0', 18) + LTRIM(RTRIM(:Codigo)), 18)
+        OR
+        RIGHT(REPLICATE('0', 18) + LTRIM(RTRIM(CAST(COMPONENTE AS VARCHAR(50)))), 18)
+          = RIGHT(REPLICATE('0', 18) + LTRIM(RTRIM(:Codigo)), 18)
+      `,
+      {
+        replacements: { Codigo: codigo },
+        type: QueryTypes.SELECT,
+      }
+    );
+
+    res.status(200).json({ data: resultados, length: resultados.length });
+  } catch (error) {
+    console.error("Error al obtener materiales pivoteados por material:", error);
+    res.status(500).json({
+      msg: "Error en el servidor al obtener los FERT que usan este material.",
+    });
+  }
+};
+
+/**
+ * Consulta saldo (SP) + detalle de movimientos del ingreso.
+ * SP: dbo.sp_Get_DisponibilidadRollo (@CodigoIngreso, @CantidadNecesaria)
+ * Detalle: dbo.movimiento + dbo.detalle_movimiento
+ */
+const getMovimientosPorIngreso = async (req, res) => {
+  try {
+    const CodigoIngreso = Number(
+      req.body?.CodigoIngreso ?? req.body?.codigo_ingreso ?? 0
+    );
+    const CantidadNecesariaRaw =
+      req.body?.CantidadNecesaria ?? req.body?.cantidad_necesaria;
+    const CantidadNecesaria =
+      CantidadNecesariaRaw === undefined ||
+      CantidadNecesariaRaw === null ||
+      CantidadNecesariaRaw === ""
+        ? null
+        : Number(CantidadNecesariaRaw);
+
+    if (!CodigoIngreso || Number.isNaN(CodigoIngreso)) {
+      return res.status(400).json({
+        msg: "Faltan parámetros: CodigoIngreso es requerido.",
+      });
+    }
+
+    const resumenRows = await db.sequelize.query(
+      `EXEC [${process.env.DB_NAME}].[dbo].[sp_Get_DisponibilidadRollo]
+        @CodigoIngreso = :CodigoIngreso,
+        @CantidadNecesaria = :CantidadNecesaria`,
+      {
+        replacements: {
+          CodigoIngreso,
+          CantidadNecesaria,
+        },
+        type: QueryTypes.SELECT,
+      }
+    );
+
+    const resumen = resumenRows?.[0] || {};
+
+    const detalleRows = await db.sequelize.query(
+      `
+      SELECT
+        m.codigo_ingreso,
+        m.codigo_movimiento,
+        m.tipo_movimiento,
+        m.cantidad_movimiento,
+        m.cantidad_estimada,
+        m.cantidad_desperdicio,
+        m.fecha_movimiento,
+        m.usuario_movimiento,
+        m.estado AS estado_movimiento,
+        d.codigo_detalle_movimiento,
+        d.orden,
+        d.cantidad_utilizada,
+        d.estado AS estado_detalle
+      FROM dbo.movimiento m
+      LEFT JOIN dbo.detalle_movimiento d
+        ON d.codigo_movimiento = m.codigo_movimiento
+       AND (d.estado IS NULL OR d.estado = 'A')
+      WHERE m.codigo_ingreso = :CodigoIngreso
+        AND (m.estado IS NULL OR m.estado = 'A')
+      ORDER BY m.codigo_movimiento, d.codigo_detalle_movimiento
+      `,
+      {
+        replacements: { CodigoIngreso },
+        type: QueryTypes.SELECT,
+      }
+    );
+
+    const data =
+      detalleRows.length > 0
+        ? detalleRows.map((row) => ({
+            ...resumen,
+            ...row,
+          }))
+        : [
+            {
+              ...resumen,
+              codigo_ingreso: resumen.codigo_ingreso ?? CodigoIngreso,
+            },
+          ];
+
+    res.status(200).json({ data, length: data.length });
+  } catch (error) {
+    console.error("Error al obtener movimientos por ingreso:", error);
+    res.status(500).json({
+      msg: "Error en el servidor al obtener movimientos por ingreso.",
+    });
+  }
+};
 module.exports = {
   // ... tus otras funciones de controlador
   getOrdenesProduccion,
@@ -870,6 +1131,11 @@ module.exports = {
   buscarOrdenesPlanchasEspumaPrensado,
   buscarSecuencialPrensado,
   cambiarEstadoEtiquetasPrensado,
-  buscarEtiquetasXOrdenPrensado
+  buscarEtiquetasXOrdenPrensado,
+  getBodegasPorCentro,
+  geetInformacionQR,
+  geetInformacionMaterial,
+  getMaterialesPivoteadosByCodigoFertPrincipal,
+  getMaterialesPivoteadosByMaterial,
+  getMovimientosPorIngreso,
 };
-

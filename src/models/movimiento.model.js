@@ -17,9 +17,19 @@ module.exports = (sequelize) => {
         cantidad_movimiento: {
             type: DataTypes.STRING
         },
+
+        /** Estimación inicial ingresada por el usuario. */
+        cantidad_estimada: {
+            type: DataTypes.DECIMAL(18, 4)
+        },
+
+        /** Desperdicio del corte ingresado por el usuario. */
+        cantidad_desperdicio: {
+            type: DataTypes.DECIMAL(18, 4)
+        },
         
         fecha_movimiento: {
-            type: DataTypes.DATE
+            type: DataTypes.STRING
         },
         
         usuario_movimiento: {
@@ -31,7 +41,7 @@ module.exports = (sequelize) => {
         },
         
         fecha_modificacion: {
-            type: DataTypes.DATE
+            type: DataTypes.STRING
         },
         
         usuario_modificacion: {

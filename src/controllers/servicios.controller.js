@@ -684,7 +684,9 @@ const insertarLogPlanchasEspumaPrensado = async (req, res) => {
       secuencial,
       producto,
       netiqueta,
+      mesa,
       codPedido,
+      tipoOpe,
     } = req.body;
 
     if (
@@ -694,15 +696,17 @@ const insertarLogPlanchasEspumaPrensado = async (req, res) => {
       secuencial === undefined ||
       producto === undefined ||
       netiqueta === undefined ||
-      codPedido === undefined
+      mesa === undefined ||
+      codPedido === undefined ||
+      tipoOpe === undefined
     ) {
       return res.status(400).json({
-        msg: "Faltan parámetros: codbarras, orden, operador, secuencial, producto, netiqueta y codPedido son requeridos.",
+        msg: "Faltan parámetros: codbarras, orden, operador, secuencial, producto, netiqueta, mesa, codPedido y tipoOpe son requeridos.",
       });
     }
 
     const resultados = await db.sequelize.query(
-      `EXEC [${process.env.DB_NAME}].[dbo].[sp_InsertLOGPlanchasEspumaPrensado] :codbarras, :orden, :operador, :secuencial, :producto, :netiqueta, :Codpedido`,
+      `EXEC [${process.env.DB_NAME}].[dbo].[sp_InsertLOGPlanchasEspumaPrensado] @codbarras = :codbarras, @orden = :orden, @operador = :operador, @secuencial = :secuencial, @producto = :producto, @netiqueta = :netiqueta, @mesa = :mesa, @Codpedido = :Codpedido, @TipoOpe = :TipoOpe`,
       {
         replacements: {
           codbarras: codbarras,
@@ -711,7 +715,9 @@ const insertarLogPlanchasEspumaPrensado = async (req, res) => {
           secuencial: secuencial,
           producto: producto,
           netiqueta: netiqueta,
+          mesa: mesa,
           Codpedido: codPedido,
+          TipoOpe: tipoOpe,
         },
         type: QueryTypes.SELECT,
       }
@@ -816,19 +822,20 @@ const cambiarEstadoEtiquetasPrensado = async (req, res) => {
 // --- Controlador para Buscar Etiquetas por Orden de Prensado ---
 const buscarEtiquetasXOrdenPrensado = async (req, res) => {
   try {
-    const { orden } = req.body;
+    const { orden, estacion } = req.body;
 
-    if (!orden) {
+    if (!orden || !estacion) {
       return res.status(400).json({
-        msg: 'El parámetro "orden" es requerido.',
+        msg: 'Los parámetros "orden" y "estacion" son requeridos.',
       });
     }
 
     const resultados = await db.sequelize.query(
-      `EXEC [${process.env.DB_NAME}].[dbo].[sp_BuscaEtiquetasXOrdenPrensado] :orden`,
+      `EXEC [${process.env.DB_NAME}].[dbo].[sp_BuscaEtiquetasXOrdenPrensado] @orden = :orden, @estacion = :estacion`,
       {
         replacements: {
           orden: orden,
+          estacion: estacion,
         },
         type: QueryTypes.SELECT,
       }
@@ -839,6 +846,76 @@ const buscarEtiquetasXOrdenPrensado = async (req, res) => {
     console.error("Error al buscar las etiquetas por orden de prensado:", error);
     res.status(500).json({
       msg: "Error en el servidor al buscar las etiquetas por orden de prensado.",
+    });
+  }
+};
+
+// --- Controlador para Buscar Etiquetas por QR de Prensado ---
+const buscarEtiquetasXQRPrensado = async (req, res) => {
+  try {
+    const { qr, estacion } = req.body;
+
+    if (!qr || !estacion) {
+      return res.status(400).json({
+        msg: 'Los parámetros "qr" y "estacion" son requeridos.',
+      });
+    }
+
+    const resultados = await db.sequelize.query(
+      `EXEC [${process.env.DB_NAME}].[dbo].[sp_BuscaEtiquetasXQRPrensado] @Qr = :qr, @estacion = :estacion`,
+      {
+        replacements: {
+          qr: qr,
+          estacion: estacion,
+        },
+        type: QueryTypes.SELECT,
+      }
+    );
+
+    res.status(200).json({
+      data: resultados,
+      length: resultados.length,
+      msg: resultados.length > 0 ? "Lectura exitosa" : "Etiqueta no encontrada o ya procesada",
+    });
+  } catch (error) {
+    console.error("Error al buscar las etiquetas por QR de prensado:", error);
+    res.status(500).json({
+      msg: "Error en el servidor al buscar las etiquetas por QR de prensado.",
+    });
+  }
+};
+
+// --- Controlador para Buscar Cantidad de QR por Estación y Rango de Fechas de Prensado ---
+const buscarCantQRxEstacionRangoPrensado = async (req, res) => {
+  try {
+    const { fechaInicio, fechaFin, estacion } = req.body;
+
+    if (!fechaInicio || !fechaFin || !estacion) {
+      return res.status(400).json({
+        msg: "Faltan parámetros: fechaInicio, fechaFin y estacion son requeridos.",
+      });
+    }
+
+    const resultados = await db.sequelize.query(
+      `EXEC [${process.env.DB_NAME}].[dbo].[sp_BuscaCantQRxEstacionRangoPrensado] @fechaINI = :fechaINI, @fechaFIN = :fechaFIN, @estacion = :estacion`,
+      {
+        replacements: {
+          fechaINI: fechaInicio,
+          fechaFIN: fechaFin,
+          estacion: estacion,
+        },
+        type: QueryTypes.SELECT,
+      }
+    );
+
+    res.status(200).json({
+      data: resultados,
+      total: resultados[0]?.TotalQRDiferentes ?? 0,
+    });
+  } catch (error) {
+    console.error("Error al buscar la cantidad de QR por estación de prensado:", error);
+    res.status(500).json({
+      msg: "Error en el servidor al buscar la cantidad de QR por estación de prensado.",
     });
   }
 };
@@ -1132,6 +1209,8 @@ module.exports = {
   buscarSecuencialPrensado,
   cambiarEstadoEtiquetasPrensado,
   buscarEtiquetasXOrdenPrensado,
+  buscarEtiquetasXQRPrensado,
+  buscarCantQRxEstacionRangoPrensado,
   getBodegasPorCentro,
   geetInformacionQR,
   geetInformacionMaterial,

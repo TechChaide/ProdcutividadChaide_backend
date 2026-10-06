@@ -28,6 +28,8 @@ const {
   buscarSecuencialPrensado,
   cambiarEstadoEtiquetasPrensado,
   buscarEtiquetasXOrdenPrensado,
+  buscarEtiquetasXQRPrensado,
+  buscarCantQRxEstacionRangoPrensado,
 
   getBodegasPorCentro,
   geetInformacionQR,
@@ -74,6 +76,8 @@ router.post("/buscarOrdenesPlanchasEspumaPrensado", buscarOrdenesPlanchasEspumaP
 router.get("/buscarSecuencialPrensado", buscarSecuencialPrensado);
 router.post("/cambiarEstadoEtiquetasPrensado", cambiarEstadoEtiquetasPrensado);
 router.post("/buscarEtiquetasXOrdenPrensado", buscarEtiquetasXOrdenPrensado);
+router.post("/buscarEtiquetasXQRPrensado", buscarEtiquetasXQRPrensado);
+router.post("/buscarCantQRxEstacionRangoPrensado", buscarCantQRxEstacionRangoPrensado);
 
 router.get("/getBodegasPorCentro", getBodegasPorCentro);
 router.post("/getInformacionQR", geetInformacionQR);

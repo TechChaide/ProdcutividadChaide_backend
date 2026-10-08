@@ -5,6 +5,8 @@ const {
   getOrdenesProduccionAlmohadas,
   getUsersIP,
   generarBC,
+  cambiarEstadoEtiquetaDistribucionAlmohadas,
+  consultarOrdenDistribucionAlmohadas,
   pistolearBC,
   consultarBC,
   getOrdenPPH,
@@ -45,6 +47,8 @@ router.post("/ordenesAlmh", getOrdenesProduccionAlmohadas);
 router.get("/ipLOGON", getUsersIP);
 
 router.post("/bar-code_generation", generarBC);
+router.post("/bar-code_status", cambiarEstadoEtiquetaDistribucionAlmohadas);
+router.post("/bar-code_order", consultarOrdenDistribucionAlmohadas);
 router.post("/bar-code_reader", pistolearBC);
 router.post("/bar-code_readerC", consultarBC);
 router.post("/reprintPlastificado", getImpresionPlastificado);

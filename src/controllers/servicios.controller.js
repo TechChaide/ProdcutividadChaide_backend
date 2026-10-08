@@ -123,6 +123,70 @@ const generarBC = async (req, res) => {
   }
 };
 
+const cambiarEstadoEtiquetaDistribucionAlmohadas = async (req, res) => {
+  try {
+    const estado = String(req.body?.estado || "").trim();
+    const codigoBarras = String(req.body?.codigoBarras || "").trim();
+
+    if (!estado || !codigoBarras) {
+      return res.status(400).json({
+        msg: "Faltan parámetros: estado y codigoBarras son requeridos.",
+      });
+    }
+
+    const resultados = await db.sequelize.query(
+      `EXEC [RFID].[dbo].[SP_CambiaEstadoEtiquetaDistribucionAlmohadas] :Estado, :CodigoBarras`,
+      {
+        replacements: {
+          Estado: estado,
+          CodigoBarras: codigoBarras,
+        },
+        type: QueryTypes.RAW,
+      }
+    );
+
+    res.status(200).json({
+      ok: true,
+      msg: "Estado de etiqueta actualizado correctamente.",
+      data: resultados,
+    });
+  } catch (error) {
+    console.error("Error al cambiar el estado de la etiqueta de distribución de almohadas:", error);
+    res.status(500).json({
+      msg: "Error en el servidor al cambiar el estado de la etiqueta.",
+    });
+  }
+};
+
+const consultarOrdenDistribucionAlmohadas = async (req, res) => {
+  try {
+    const { orden } = req.body;
+
+    if (!orden) {
+      return res.status(400).json({
+        msg: "Faltan parámetros: orden es requerido.",
+      });
+    }
+
+    const resultados = await db.sequelize.query(
+      `EXEC [RFID].[dbo].[SP_ConsultaOrdenDistribucionAlmohadas] :Orden`,
+      {
+        replacements: {
+          Orden: orden,
+        },
+        type: QueryTypes.SELECT,
+      }
+    );
+
+    res.status(200).json({ data: resultados, length: resultados.length });
+  } catch (error) {
+    console.error("Error al consultar etiquetas de distribución de almohadas por orden:", error);
+    res.status(500).json({
+      msg: "Error en el servidor al consultar las etiquetas de la orden.",
+    });
+  }
+};
+
 const consultarBC = async (req, res) => {
   try {
     const { codigoBarras } = req.body;
@@ -1187,6 +1251,8 @@ module.exports = {
   getOrdenesProduccionAlmohadas,
   getUsersIP,
   generarBC,
+  cambiarEstadoEtiquetaDistribucionAlmohadas,
+  consultarOrdenDistribucionAlmohadas,
   consultarBC,
   pistolearBC,
   getOrdenPPH,

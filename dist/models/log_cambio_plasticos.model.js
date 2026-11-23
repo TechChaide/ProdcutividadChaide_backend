@@ -10,6 +10,11 @@ module.exports = function (sequelize) {
       allowNull: false,
       primaryKey: true
     },
+    centro: {
+      type: DataTypes.STRING,
+      allowNull: false,
+      defaultValue: '1000'
+    },
     identificacion_producto: {
       type: DataTypes.STRING,
       allowNull: false

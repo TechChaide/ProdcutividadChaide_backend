@@ -1,0 +1,128 @@
+<?xml version="1.0" encoding="utf-8"?>
+<wsdl:definitions xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:wsoap12="http://schemas.xmlsoap.org/wsdl/soap12/" xmlns:tns="urn:sap-com:document:sap:soap:functions:mc-style" xmlns:mime="http://schemas.xmlsoap.org/wsdl/mime/" xmlns:http="http://schemas.xmlsoap.org/wsdl/http/" xmlns:n1="urn:sap-com:document:sap:rfc:functions" xmlns:xsd="http://www.w3.org/2001/XMLSchema" targetNamespace="urn:sap-com:document:sap:soap:functions:mc-style" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">
+  <wsdl:documentation>
+    <sidl:sidl xmlns:sidl="http://www.sap.com/2007/03/sidl" />
+  </wsdl:documentation>
+  <wsdl:types>
+    <xsd:schema attributeFormDefault="qualified" targetNamespace="urn:sap-com:document:sap:rfc:functions">
+      <xsd:simpleType name="char1">
+        <xsd:restriction base="xsd:string">
+          <xsd:maxLength value="1" />
+        </xsd:restriction>
+      </xsd:simpleType>
+      <xsd:simpleType name="char18">
+        <xsd:restriction base="xsd:string">
+          <xsd:maxLength value="18" />
+        </xsd:restriction>
+      </xsd:simpleType>
+      <xsd:simpleType name="char200">
+        <xsd:restriction base="xsd:string">
+          <xsd:maxLength value="200" />
+        </xsd:restriction>
+      </xsd:simpleType>
+      <xsd:simpleType name="char25">
+        <xsd:restriction base="xsd:string">
+          <xsd:maxLength value="25" />
+        </xsd:restriction>
+      </xsd:simpleType>
+      <xsd:simpleType name="char3">
+        <xsd:restriction base="xsd:string">
+          <xsd:maxLength value="3" />
+        </xsd:restriction>
+      </xsd:simpleType>
+      <xsd:simpleType name="char5">
+        <xsd:restriction base="xsd:string">
+          <xsd:maxLength value="5" />
+        </xsd:restriction>
+      </xsd:simpleType>
+      <xsd:simpleType name="quantum13.3">
+        <xsd:restriction base="xsd:decimal">
+          <xsd:totalDigits value="13" />
+          <xsd:fractionDigits value="3" />
+        </xsd:restriction>
+      </xsd:simpleType>
+    </xsd:schema>
+    <xsd:schema xmlns:n0="urn:sap-com:document:sap:rfc:functions" attributeFormDefault="qualified" targetNamespace="urn:sap-com:document:sap:soap:functions:mc-style">
+      <xsd:import namespace="urn:sap-com:document:sap:rfc:functions" />
+      <xsd:complexType name="ZtsMessage">
+        <xsd:sequence>
+          <xsd:element name="Id" type="n0:char1" />
+          <xsd:element name="Message" type="n0:char200" />
+        </xsd:sequence>
+      </xsd:complexType>
+      <xsd:complexType name="ZttMessage">
+        <xsd:sequence>
+          <xsd:element minOccurs="0" maxOccurs="unbounded" name="item" type="tns:ZtsMessage" />
+        </xsd:sequence>
+      </xsd:complexType>
+      <xsd:element name="ZmmWsMigo">
+        <xsd:complexType>
+          <xsd:sequence>
+            <xsd:element name="EtMessage" type="tns:ZttMessage" />
+            <xsd:element name="ICantidad" type="n0:quantum13.3" />
+            <xsd:element name="ICiudad" type="n0:char3" />
+            <xsd:element minOccurs="0" name="IMaterial" type="n0:char18" />
+            <xsd:element name="IOrigen" type="n0:char25" />
+          </xsd:sequence>
+        </xsd:complexType>
+      </xsd:element>
+      <xsd:element name="ZmmWsMigoResponse">
+        <xsd:complexType>
+          <xsd:sequence>
+            <xsd:element name="EStatus" type="n0:char5" />
+            <xsd:element name="EtMessage" type="tns:ZttMessage" />
+          </xsd:sequence>
+        </xsd:complexType>
+      </xsd:element>
+    </xsd:schema>
+  </wsdl:types>
+  <wsdl:message name="ZmmWsMigo">
+    <wsdl:part name="parameters" element="tns:ZmmWsMigo" />
+  </wsdl:message>
+  <wsdl:message name="ZmmWsMigoResponse">
+    <wsdl:part name="parameter" element="tns:ZmmWsMigoResponse" />
+  </wsdl:message>
+  <wsdl:portType name="ZWS_NOTI_PRENSADO">
+    <wsdl:documentation>
+      <sapdoc:sapdoc xmlns:sapdoc="urn:sap:esi:documentation">
+        <sapdoc:docitem docURL="http://srv-hcp-a-pr.industria.chaide.com:1080/sap/bc/esdt/docu/sd_text?sap-client=300&amp;sd_name=ZWS_NOTI_PRENSADO" />
+      </sapdoc:sapdoc>
+    </wsdl:documentation>
+    <wsdl:operation name="ZmmWsMigo">
+      <wsdl:input message="tns:ZmmWsMigo" />
+      <wsdl:output message="tns:ZmmWsMigoResponse" />
+    </wsdl:operation>
+  </wsdl:portType>
+  <wsdl:binding name="ZWS_NOTI_PRENSADO" type="tns:ZWS_NOTI_PRENSADO">
+    <soap:binding transport="http://schemas.xmlsoap.org/soap/http" />
+    <wsdl:operation name="ZmmWsMigo">
+      <soap:operation soapAction="urn:sap-com:document:sap:soap:functions:mc-style:ZWS_NOTI_PRENSADO:ZmmWsMigoRequest" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+  </wsdl:binding>
+  <wsdl:binding name="ZWS_NOTI_PRENSADO_soap12" type="tns:ZWS_NOTI_PRENSADO">
+    <wsoap12:binding transport="http://schemas.xmlsoap.org/soap/http" />
+    <wsdl:operation name="ZmmWsMigo">
+      <wsoap12:operation soapAction="urn:sap-com:document:sap:soap:functions:mc-style:ZWS_NOTI_PRENSADO:ZmmWsMigoRequest" style="document" />
+      <wsdl:input>
+        <wsoap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <wsoap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+  </wsdl:binding>
+  <wsdl:service name="service">
+    <wsdl:port name="ZWS_NOTI_PRENSADO" binding="tns:ZWS_NOTI_PRENSADO">
+      <soap:address location="http://srv-hcp-a-pr.industria.chaide.com:1080/sap/bc/srt/rfc/sap/zws_noti_prensado/300/zws_noti_prensado/zws_noti_prensado" />
+    </wsdl:port>
+    <wsdl:port name="ZWS_NOTI_PRENSADO_soap12" binding="tns:ZWS_NOTI_PRENSADO_soap12">
+      <wsoap12:address location="http://srv-hcp-a-pr.industria.chaide.com:1080/sap/bc/srt/rfc/sap/zws_noti_prensado/300/zws_noti_prensado/zws_noti_prensado" />
+    </wsdl:port>
+  </wsdl:service>
+</wsdl:definitions>

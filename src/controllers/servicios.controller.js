@@ -2,6 +2,7 @@
 
 const { QueryTypes } = require("sequelize");
 const db = require("../models"); // Importa el objeto db desde los modelos
+const { registrarDesperdicioSAP } = require("../helpers/sap_desperdicios.helper");
 
 // --- Controlador para Z_Consulta_Ordenes_Produccion ---
 const getOrdenesProduccion = async (req, res) => {
@@ -984,6 +985,144 @@ const buscarCantQRxEstacionRangoPrensado = async (req, res) => {
   }
 };
 
+//////////////////////////////////////////////////////////////////////////////
+// Lectura de desperdicios (BMP_Balanza.dbo.DesperdiciosAreas)
+
+// ESTADO 1 = pendiente, 2 = ingresado.
+const ESTADO_DESPERDICIO_INGRESADO = 2;
+// DOCUMENTO que guarda el modo Garitas (DESPERDICIOS_MODO_GARITAS=true), donde no se envía a SAP.
+const DOCUMENTO_DESPERDICIO_GARITAS = "Desperdicio Garitas no envio a SAP";
+
+const consultarDesperdicioXCodBarras = (codbarras) =>
+  db.sequelize.query(
+    `EXEC [${process.env.DB_NAME}].[dbo].[sp_BuscaDesperdicioXCodBarras] @codbarras = :codbarras`,
+    {
+      replacements: { codbarras },
+      type: QueryTypes.SELECT,
+    }
+  );
+
+// --- Controlador para Buscar un Desperdicio por Código de Barras ---
+const buscarDesperdicioXCodBarras = async (req, res) => {
+  try {
+    const codbarras = String(req.body?.codbarras ?? "").trim();
+
+    if (!codbarras) {
+      return res.status(400).json({
+        msg: 'El parámetro "codbarras" es requerido.',
+      });
+    }
+
+    const resultados = await consultarDesperdicioXCodBarras(codbarras);
+
+    res.status(200).json({
+      data: resultados,
+      length: resultados.length,
+      msg: resultados.length > 0 ? "Lectura exitosa" : "Desperdicio no encontrado",
+    });
+  } catch (error) {
+    console.error("Error al buscar el desperdicio por código de barras:", error);
+    res.status(500).json({
+      msg: "Error en el servidor al buscar el desperdicio por código de barras.",
+    });
+  }
+};
+
+// --- Controlador para Ingresar un Desperdicio en SAP (ZmmWsMigo) y marcarlo como ingresado ---
+const ingresarDesperdicio = async (req, res) => {
+  try {
+    const codbarras = String(req.body?.codbarras ?? "").trim();
+
+    if (!codbarras) {
+      return res.status(400).json({
+        msg: 'El parámetro "codbarras" es requerido.',
+      });
+    }
+
+    // Cantidad, regional y departamento se toman de la BDD, no de lo que envíe el cliente.
+    const [desperdicio] = await consultarDesperdicioXCodBarras(codbarras);
+
+    if (!desperdicio) {
+      return res.status(404).json({
+        msg: `No se encontró el desperdicio ${codbarras}.`,
+        ingresado: false,
+      });
+    }
+
+    if (Number(desperdicio.ESTADO) === ESTADO_DESPERDICIO_INGRESADO) {
+      return res.status(409).json({
+        msg: "Este desperdicio ya fue ingresado anteriormente.",
+        ingresado: false,
+        documento: desperdicio.DOCUMENTO,
+      });
+    }
+
+    let documento = DOCUMENTO_DESPERDICIO_GARITAS;
+
+    if (process.env.DESPERDICIOS_MODO_GARITAS !== "true") {
+      let sap;
+      try {
+        sap = await registrarDesperdicioSAP({
+          cantidad: desperdicio.DESPERDICIO_NETO,
+          ciudad: desperdicio.REGIONAL,
+          origen: desperdicio.DEPARTAMENTO,
+        });
+      } catch (error) {
+        console.error(`Error al enviar el desperdicio ${codbarras} a SAP:`, error);
+        return res.status(502).json({
+          msg: error.message,
+          ingresado: false,
+          reintentable: error.reintentable !== false,
+        });
+      }
+
+      if (sap.estado !== "OK") {
+        return res.status(422).json({
+          msg: sap.mensaje || `SAP no registró el desperdicio (estado "${sap.estado}").`,
+          ingresado: false,
+          estadoSAP: sap.estado,
+        });
+      }
+
+      documento = sap.mensaje || sap.estado;
+    }
+
+    try {
+      const [resultado] = await db.sequelize.query(
+        `EXEC [${process.env.DB_NAME}].[dbo].[sp_IngresaDesperdicio] @codbarras = :codbarras, @documento = :documento`,
+        {
+          replacements: { codbarras, documento },
+          type: QueryTypes.SELECT,
+        }
+      );
+      if (!(Number(resultado?.Actualizados) > 0)) {
+        throw new Error("sp_IngresaDesperdicio no actualizó ninguna fila.");
+      }
+    } catch (error) {
+      // SAP ya creó el documento: si el operador reintenta se duplicaría la salida.
+      console.error(`SAP registró el desperdicio ${codbarras} (${documento}) pero no se marcó como ingresado:`, error);
+      return res.status(500).json({
+        msg: `SAP registró el desperdicio (${documento}) pero no se pudo marcar como ingresado. No lo vuelva a enviar; reporte el código ${codbarras} a sistemas.`,
+        ingresado: false,
+        reintentable: false,
+        documento,
+      });
+    }
+
+    res.status(200).json({
+      msg: documento,
+      ingresado: true,
+      documento,
+    });
+  } catch (error) {
+    console.error("Error al ingresar el desperdicio:", error);
+    res.status(500).json({
+      msg: "Error en el servidor al ingresar el desperdicio.",
+      ingresado: false,
+    });
+  }
+};
+
 
 
 
@@ -1277,6 +1416,8 @@ module.exports = {
   buscarEtiquetasXOrdenPrensado,
   buscarEtiquetasXQRPrensado,
   buscarCantQRxEstacionRangoPrensado,
+  buscarDesperdicioXCodBarras,
+  ingresarDesperdicio,
   getBodegasPorCentro,
   geetInformacionQR,
   geetInformacionMaterial,

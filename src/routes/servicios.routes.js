@@ -32,6 +32,8 @@ const {
   buscarEtiquetasXOrdenPrensado,
   buscarEtiquetasXQRPrensado,
   buscarCantQRxEstacionRangoPrensado,
+  buscarDesperdicioXCodBarras,
+  ingresarDesperdicio,
 
   getBodegasPorCentro,
   geetInformacionQR,
@@ -82,6 +84,10 @@ router.post("/cambiarEstadoEtiquetasPrensado", cambiarEstadoEtiquetasPrensado);
 router.post("/buscarEtiquetasXOrdenPrensado", buscarEtiquetasXOrdenPrensado);
 router.post("/buscarEtiquetasXQRPrensado", buscarEtiquetasXQRPrensado);
 router.post("/buscarCantQRxEstacionRangoPrensado", buscarCantQRxEstacionRangoPrensado);
+
+//////////////////Endpoints para lectura de desperdicios
+router.post("/buscarDesperdicioXCodBarras", buscarDesperdicioXCodBarras);
+router.post("/ingresarDesperdicio", ingresarDesperdicio);
 
 router.get("/getBodegasPorCentro", getBodegasPorCentro);
 router.post("/getInformacionQR", geetInformacionQR);

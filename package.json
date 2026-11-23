@@ -16,7 +16,7 @@
   "scripts": {
     "start": "node server.js",
     "dev": "nodemon server.js",
-    "build": "rimraf dist && babel src -d dist && copy .env dist\\"
+    "build": "rimraf dist && babel src -d dist --copy-files && copy .env dist\\"
   },
   "devDependencies": {
     "@babel/cli": "^7.28.0",

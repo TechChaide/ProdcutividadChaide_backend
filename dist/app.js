@@ -27,6 +27,9 @@ var ORDENEmpleadoPNCRoutes = require("./routes/ORDEN_EMPLEADO_PNC.routes");
 var serviciosRoutes = require("./routes/servicios.routes");
 var sesionRoutes = require('./routes/sesion.routes');
 var authRoutes = require("./routes/auth.routes");
+var detalle_movimientoRoutes = require('./routes/detalle_movimiento.routes');
+var ingresosRoutes = require('./routes/ingresos.routes');
+var movimientoRoutes = require('./routes/movimiento.routes');
 var serviciosDashboardRoutes = require("./routes/servicios_dashboard.routes");
 
 // Middlewares
@@ -55,6 +58,9 @@ app.use("/api/servicios", serviciosRoutes);
 app.use('/api/sesions', sesionRoutes);
 app.use("/api/auths", authRoutes);
 app.use("/api/dsh-Servicios", serviciosDashboardRoutes);
+app.use('/api/detalle_movimiento', detalle_movimientoRoutes);
+app.use('/api/ingresos', ingresosRoutes);
+app.use('/api/movimiento', movimientoRoutes);
 
 // Error handling middleware
 app.use(function (err, req, res, next) {

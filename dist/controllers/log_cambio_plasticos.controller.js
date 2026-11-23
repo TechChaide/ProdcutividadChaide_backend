@@ -12,12 +12,12 @@ module.exports = {
   // Create or update record
   createOrUpdate: function () {
     var _createOrUpdate = _asyncToGenerator(/*#__PURE__*/_regenerator().m(function _callee(req, res) {
-      var _req$body, codigo_log_cp, identificacion_producto, nombre_producto, material_fert, fecha_cambio, tipo_cambio, material_cambio, material_cambio_nombre, material_cambio_unidad, material_cambio_cantidad, solicitante, operador, colaboradores, estacion, tiempo_empleado, estado, newRecord, response, record, _response, _t;
+      var _req$body, codigo_log_cp, identificacion_producto, nombre_producto, material_fert, fecha_cambio, tipo_cambio, material_cambio, material_cambio_nombre, material_cambio_unidad, material_cambio_cantidad, solicitante, operador, colaboradores, estacion, tiempo_empleado, estado, centro, newRecord, response, record, _response, _t;
       return _regenerator().w(function (_context) {
         while (1) switch (_context.p = _context.n) {
           case 0:
             _context.p = 0;
-            _req$body = req.body, codigo_log_cp = _req$body.codigo_log_cp, identificacion_producto = _req$body.identificacion_producto, nombre_producto = _req$body.nombre_producto, material_fert = _req$body.material_fert, fecha_cambio = _req$body.fecha_cambio, tipo_cambio = _req$body.tipo_cambio, material_cambio = _req$body.material_cambio, material_cambio_nombre = _req$body.material_cambio_nombre, material_cambio_unidad = _req$body.material_cambio_unidad, material_cambio_cantidad = _req$body.material_cambio_cantidad, solicitante = _req$body.solicitante, operador = _req$body.operador, colaboradores = _req$body.colaboradores, estacion = _req$body.estacion, tiempo_empleado = _req$body.tiempo_empleado, estado = _req$body.estado; // Validar campos obligatorios
+            _req$body = req.body, codigo_log_cp = _req$body.codigo_log_cp, identificacion_producto = _req$body.identificacion_producto, nombre_producto = _req$body.nombre_producto, material_fert = _req$body.material_fert, fecha_cambio = _req$body.fecha_cambio, tipo_cambio = _req$body.tipo_cambio, material_cambio = _req$body.material_cambio, material_cambio_nombre = _req$body.material_cambio_nombre, material_cambio_unidad = _req$body.material_cambio_unidad, material_cambio_cantidad = _req$body.material_cambio_cantidad, solicitante = _req$body.solicitante, operador = _req$body.operador, colaboradores = _req$body.colaboradores, estacion = _req$body.estacion, tiempo_empleado = _req$body.tiempo_empleado, estado = _req$body.estado, centro = _req$body.centro; // Validar campos obligatorios
             if (!(codigo_log_cp === undefined || codigo_log_cp === null || identificacion_producto === undefined || identificacion_producto === null)) {
               _context.n = 1;
               break;
@@ -49,7 +49,8 @@ module.exports = {
               solicitante: solicitante,
               estacion: estacion,
               tiempo_empleado: tiempo_empleado,
-              estado: estado
+              estado: estado,
+              centro: centro
             });
           case 2:
             newRecord = _context.v;
@@ -81,6 +82,7 @@ module.exports = {
             // Update fields
 
             record.identificacion_producto = identificacion_producto !== null && identificacion_producto !== void 0 ? identificacion_producto : record.identificacion_producto;
+            record.centro = centro !== null && centro !== void 0 ? centro : record.centro;
             record.nombre_producto = nombre_producto !== null && nombre_producto !== void 0 ? nombre_producto : record.nombre_producto;
             record.material_fert = material_fert !== null && material_fert !== void 0 ? material_fert : record.material_fert;
             record.fecha_cambio = fecha_cambio !== null && fecha_cambio !== void 0 ? fecha_cambio : record.fecha_cambio;
